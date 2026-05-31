@@ -1,0 +1,211 @@
+================================================================================
+  RUFFIAN TARGET PROMOTION — PROJECT SUMMARY
+  Last updated: 2026-05-22
+================================================================================
+
+WHAT WAS BUILT
+──────────────
+A promotional landing page for Ruffian (luxury perfume subscription brand) to
+be used as an Instagram ad target. When users click an Instagram ad, they land
+on this page, enter their Instagram username, receive a unique 5-digit code,
+and are instructed to DM that code to @ruffian.uz on Instagram.
+
+THE FLOW
+────────
+  Instagram Ad → User clicks → Landing page (ruffian.uz/target/)
+    ↓
+  PAGE 1: User sees 3 ritual steps (I, II, III in Celandine font)
+          → Enters their Instagram username
+          → Clicks "Kodimni olish"
+    ↓
+  PHP Backend generates a unique 5-digit code, saves to CSV
+    ↓
+  PAGE 2: Code displayed prominently (in Celandine font, gold)
+          → User copies the code
+          → User taps "Instagram DM yuborish" → opens DM to @ruffian.uz
+          → Sends the code via DM
+    ↓
+  Ruffian team sees the DM, verifies the code in the CSV, and arranges
+  the free perfume sample delivery.
+
+TECH STACK
+──────────
+  Frontend:  HTML5 + CSS3 + Vanilla JavaScript (no frameworks, no build step)
+  Backend:   PHP (single endpoint — works on any shared hosting with PHP)
+  Storage:   CSV file (data/submissions.csv) — flat file, no database needed
+  Fonts:     Celandine (licensed, self-hosted woff/woff2) + Google Fonts
+  Hosting:   unlimitedwebhosting.co.uk (cPanel shared hosting)
+
+FILE STRUCTURE
+──────────────
+  /home/bmbrenov/ruffianuz/target/    ← deployment path on server
+  (locally: /home/ubuntu/ruffian_target_page/)
+
+  target/
+  ├── index.html              Main landing page (2-page flow, all Uzbek)
+  ├── .htaccess               Apache security rules, compression, caching
+  │
+  ├── css/
+  │   └── style.css           All styles — brand colors, typography, responsive
+  │
+  ├── js/
+  │   └── app.js              Frontend logic — validation, API calls, copy, DM link
+  │
+  ├── fonts/
+  │   ├── ed-celandine-regular.woff2    Celandine font (primary, compressed)
+  │   └── ed-celandine-regular.woff     Celandine font (fallback)
+  │
+  ├── api/
+  │   └── submit.php          Backend endpoint — generates codes, saves to CSV
+  │
+  ├── data/
+  │   ├── .htaccess           Blocks direct web access to CSV file
+  │   └── submissions.csv     Stored submissions (code, timestamp, username)
+  │
+  ├── DEPLOYMENT.md           Step-by-step deployment guide
+  └── PROJECT_SUMMARY.txt     This file
+
+FILE PURPOSES
+─────────────
+
+  index.html
+    The single-page app with two states. Page 1 has the brand wordmark
+    (RUFFIAN in Celandine), three ritual steps with Roman numerals (I, II, III)
+    also in Celandine, an Instagram follow badge, and the username input form.
+    Page 2 shows the generated 5-digit code (also in Celandine), copy button,
+    DM instructions, and a link that opens the Instagram DM to @ruffian.uz.
+    Everything is in Uzbek language.
+
+  css/style.css
+    Complete brand-compliant styling following the Ruffian Brand Identity
+    Guidelines (version 1.0). Includes @font-face for Celandine, CSS variables
+    for all brand colors, noise texture overlay on the green background,
+    responsive breakpoints (600px, 380px), animations (fadeIn, spinner),
+    and all component styles. Typography hierarchy:
+      Celandine → wordmark, ritual numerals, code display
+      Cormorant Garamond → headlines, ritual step text
+      Lora → body text, DM instructions, final note
+      Montserrat → buttons, labels, input fields, footer
+
+  js/app.js
+    Frontend logic. Validates Instagram usernames client-side (1-30 chars,
+    alphanumeric + dots + underscores). Sends POST to api/submit.php with
+    JSON body. Handles non-JSON error responses gracefully (server might return
+    HTML error pages). Shows loading spinner on button during API call.
+    Copy-to-clipboard with fallback for older browsers. Opens Instagram DM
+    via ig.me/m/ruffian.uz deeplink.
+
+  api/submit.php
+    Backend endpoint. Accepts POST with JSON body {"instagram": "username"}.
+    Also accepts standard form-encoded POST as fallback. Cleans and validates
+    the username. Checks if user already registered (returns existing code).
+    Generates unique 5-digit code (10000–99999). Appends row to CSV with
+    file locking (LOCK_EX) for concurrent safety. Returns JSON response.
+    Includes shutdown handler to catch fatal PHP errors and still return JSON.
+    Compatible with PHP 7.4+ (tested on PHP 8.2).
+
+  data/submissions.csv
+    Flat-file database. Columns: code, timestamp, instagram_username.
+    Protected from direct web access by .htaccess in the data/ directory.
+    Must have write permissions (chmod 666) for PHP to append rows.
+    Download via cPanel File Manager or FTP to review submissions.
+
+  .htaccess (root)
+    Blocks direct access to .csv files. Sets security headers
+    (X-Content-Type-Options, X-Frame-Options). Enables gzip compression
+    for HTML/CSS/JS/JSON. Sets long cache expiry for font files.
+    Deliberately avoids mod_rewrite rules (can cause issues on some
+    shared hosting configurations).
+
+  data/.htaccess
+    Simple "Deny from all" — prevents any direct HTTP access to the
+    data directory and its contents (submissions.csv).
+
+BRAND ASSETS USED
+─────────────────
+
+  Colors (from Ruffian Brand Identity Guidelines v1.0):
+    Hunter Green    #0A5020  — primary background
+    Ruffian Gold    #E9B631  — accents, wordmark, CTA buttons, code display
+    Gold Highlight  #FCD44F  — hover states
+    Jet Black       #0A0A0A  — button text on gold, card backgrounds
+    Pure White      #FFFFFF  — body text on dark backgrounds
+    Warm Ivory      #F5F0E8  — (available, not used in dark-mode page)
+    Charcoal        #1C1C1C  — (available for light-mode use)
+
+  Fonts:
+    Celandine (ED Celandine Regular) — licensed, self-hosted
+      Used for: RUFFIAN wordmark, ritual step numerals (I, II, III),
+               5-digit code display on Page 2
+    Cormorant Garamond (Google Fonts) — Light 300, Regular 400, SemiBold 600
+      Used for: page headlines, ritual step text
+    Lora (Google Fonts) — Regular 400, Italic 400
+      Used for: body text, DM instructions, final note, input placeholder
+    Montserrat (Google Fonts) — Light 300, Regular 400
+      Used for: buttons, labels, input fields, footer, copy button
+
+  Design principles applied:
+    - Dark is default (Hunter Green background)
+    - Gold used sparingly (accents only, never as background)
+    - Generous spacing (48px+ padding)
+    - Subtle noise texture on background (3-4% opacity)
+    - Fine gold rules as structural elements
+    - Sharp-edged buttons (max 2px border-radius, no pill shapes)
+    - Smooth 200ms ease transitions
+    - Single clear hierarchy per page
+
+DEPLOYMENT DETAILS
+──────────────────
+
+  Hosting:     unlimitedwebhosting.co.uk (cPanel shared hosting)
+  Server path: /home/bmbrenov/ruffianuz/target/
+  Live URL:    https://ruffian.uz/target/  (once deployed under target/)
+  PHP version: 8.2 (tested), compatible with 7.4+
+  Domain:      ruffianuz directory serves ruffian.uz
+
+  To deploy:
+    1. Upload ruffian_target_page.zip to /home/bmbrenov/ruffianuz/
+    2. Create a "target" folder inside ruffianuz/
+    3. Extract zip contents INTO the target/ folder
+    4. Set data/submissions.csv permissions to 666
+    5. Test at https://ruffian.uz/target/
+
+  To retrieve collected data:
+    - cPanel File Manager → ruffianuz/target/data/submissions.csv → Download
+    - Or via FTP
+
+IMPORTANT NOTES FOR FUTURE DEVELOPMENT
+───────────────────────────────────────
+
+  1. The CSV file will grow indefinitely. For high-traffic promotions
+     (10,000+ submissions), consider migrating to SQLite or MySQL.
+
+  2. The 5-digit code space allows 90,000 unique codes (10000–99999).
+     Sufficient for a promotional campaign; not for long-term use.
+
+  3. Celandine is a licensed font from YouWorkForThem. The woff/woff2
+     files are included for web use under the purchased license.
+     Do not redistribute the font files outside this project.
+
+  4. The page is entirely in Uzbek (O'zbek tili). If multi-language
+     support is needed, the text strings are all in index.html and
+     js/app.js — no i18n framework is used.
+
+  5. No analytics or tracking is included. Add Google Analytics or
+     Meta Pixel if tracking ad conversion is needed.
+
+  6. The Instagram DM deeplink (ig.me/m/ruffian.uz) opens Instagram
+     on mobile. On desktop browsers it opens Instagram web DM.
+
+  7. There is no admin panel. To view submissions, download the CSV
+     directly from the server via cPanel or FTP.
+
+  8. The server error seen on first deployment was likely caused by:
+     - .htaccess RewriteEngine rules conflicting with server config
+     - PHP not handling JSON Content-Type on some shared hosting
+     Both issues are now fixed: .htaccess uses simpler directives,
+     and the PHP falls back to form-encoded POST if JSON parsing fails.
+
+================================================================================
+  End of Project Summary
+================================================================================

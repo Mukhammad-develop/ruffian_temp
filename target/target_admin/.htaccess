@@ -1,0 +1,11 @@
+# Ruffian Admin — Extra security
+# Block common bot scanners and direct PHP file access except known files
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes

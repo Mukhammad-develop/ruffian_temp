@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RUFFIAN — Bepul Atir Olish</title>
+    <meta name="description" content="Ruffian'dan bepul atir olish uchun ro'yxatdan o'ting. Instagram orqali maxsus kodingizni oling.">
+
+    <!-- Preconnect Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Lora:ital,wght@0,400;1,400&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <!-- Brand Logo (Wordmark + Emblem) -->
+    <div class="brand-logo-container">
+        <img class="brand-logo-img" src="logo/Ruffian-logo-text-green-yellow.png" alt="RUFFIAN" draggable="false">
+    </div>
+
+    <hr class="brand-rule">
+
+    <div class="card">
+
+        <!-- ════════ PAGE 1: Username Entry ════════ -->
+        <div id="step-1" class="step active">
+
+            <h1 class="step-title">Bepul atir qo'lga kiriting</h1>
+
+            <!-- 3-Step Instructions — Celandine numerals -->
+            <div class="ritual-steps">
+                <div class="ritual-step">
+                    <span class="ritual-numeral">I</span>
+                    <div class="ritual-divider"></div>
+                    <span class="ritual-text">Username kiriting</span>
+                </div>
+                <div class="ritual-step">
+                    <span class="ritual-numeral">II</span>
+                    <div class="ritual-divider"></div>
+                    <span class="ritual-text">Promokodni DM qiling</span>
+                </div>
+                <div class="ritual-step">
+                    <span class="ritual-numeral">III</span>
+                    <div class="ritual-divider"></div>
+                    <span class="ritual-text">Tekin sovg'angizni oling</span>
+                </div>
+            </div>
+
+            <!-- Follow instruction -->
+            <div class="insta-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5"/>
+                    <circle cx="12" cy="12" r="5"/>
+                    <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+                </svg>
+                <span>@ruffian.uz ni kuzating</span>
+            </div>
+
+            <form id="step1-form" autocomplete="off">
+                <div class="input-group">
+                    <span class="input-prefix">@</span>
+                    <input
+                        type="text"
+                        id="instagram-input"
+                        class="form-input"
+                        placeholder="username"
+                        autocomplete="off"
+                        autocapitalize="none"
+                        spellcheck="false"
+                        required
+                    >
+                    <div id="input-error" class="input-error"></div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn-primary">
+                    Tayyor
+                </button>
+            </form>
+        </div>
+
+        <!-- ════════ PAGE 2: Code + DM Instructions ════════ -->
+        <div id="step-2" class="step">
+
+            <h2 class="step-title">Sizning maxsus promokodingiz</h2>
+
+            <div class="code-display">
+                <div id="code-value" class="code-value">—</div>
+                <div class="code-label">Sizning promokodingiz</div>
+                <button id="copy-btn" class="copy-btn" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2"/>
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                    </svg>
+                    <span>Nusxalash</span>
+                </button>
+            </div>
+
+            <div class="dm-instructions">
+                <p>
+                    <strong>1.</strong> Yuqoridagi promokodni nusxalang.<br>
+                    <strong>2.</strong> Instagram'da <strong>@ruffian.uz</strong> sahifasiga o'ting.<br>
+                    <strong>3.</strong> DM orqali ushbu promokodni yuboring.
+                </p>
+            </div>
+
+            <a id="dm-link" href="https://ig.me/m/ruffian.uz" class="btn-primary" style="display:block; text-decoration:none;">
+                Instagram DM yuborish
+            </a>
+
+            <div class="final-note">
+                <p>
+                    Promokodni nusxalab, bu sahifani bemalol yopishingiz mumkin.<br>
+                    DM yuboring — qolgan hamma narsa DM orqali hal bo'ladi.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+        <hr class="footer-rule">
+        <p class="footer-text">
+            <a href="https://ruffian.uz" class="footer-link">ruffian.uz</a>
+            &nbsp;·&nbsp; 2026
+        </p>
+    </footer>
+
+</div>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
