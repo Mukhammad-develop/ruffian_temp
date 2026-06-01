@@ -149,9 +149,24 @@
         }
 
         function showFeedback() {
+            var copySvg = copyBtn ? copyBtn.querySelector('svg') : null;
             if (copyLabel) {
                 copyLabel.textContent = 'Nusxalandi';
-                setTimeout(function () { copyLabel.textContent = 'Nusxalash'; }, 2000);
+                if (copyBtn) copyBtn.classList.add('copied');
+                
+                var originalSvgHTML = '';
+                if (copySvg) {
+                    originalSvgHTML = copySvg.innerHTML;
+                    copySvg.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+                }
+                
+                setTimeout(function () {
+                    copyLabel.textContent = 'Nusxalash';
+                    if (copyBtn) copyBtn.classList.remove('copied');
+                    if (copySvg && originalSvgHTML) {
+                        copySvg.innerHTML = originalSvgHTML;
+                    }
+                }, 2000);
             }
         }
     }

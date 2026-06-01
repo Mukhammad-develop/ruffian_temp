@@ -529,6 +529,12 @@ body::before {
     transform: translateY(0);
 }
 
+.copy-btn.copied {
+    background: rgba(233, 182, 49, 0.15);
+    border-color: var(--ruffian-gold);
+    color: var(--gold-highlight);
+}
+
 .copy-btn svg {
     width: 14px;
     height: 14px;
