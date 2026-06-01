@@ -686,3 +686,28 @@ body::before {
     }
 }
 
+/* Section Title Separators */
+.dash-section-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ruffian-gold);
+    letter-spacing: 0.08em;
+    margin: 48px 0 24px;
+    border-bottom: 1px solid rgba(233, 182, 49, 0.25);
+    padding-bottom: 12px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dash-section-title::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 18px;
+    background: var(--ruffian-gold);
+}
+
+

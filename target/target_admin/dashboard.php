@@ -12,10 +12,10 @@ if (!isset($_SESSION['ruffian_admin_auth']) || $_SESSION['ruffian_admin_auth'] !
     exit();
 }
 
-// ── Read Submissions CSV (Historical Registrations) ──
+// ── Read Submissions CSV (Legacy Registrations) ──
 $csvFile = dirname(__DIR__) . '/data/submissions.csv';
 $submissions = [];
-$totalCount = 0;
+$totalLegacySubmissions = 0;
 
 if (file_exists($csvFile) && ($handle = fopen($csvFile, 'r')) !== false) {
     $header = fgetcsv($handle); // skip header
@@ -30,132 +30,182 @@ if (file_exists($csvFile) && ($handle = fopen($csvFile, 'r')) !== false) {
         }
     }
     fclose($handle);
-    $totalCount = count($submissions);
+    $totalLegacySubmissions = count($submissions);
 }
 
 // Reverse — newest first
 $submissions = array_reverse($submissions);
 
-// ── Read Clicks CSV (Visits) ──
-$clicksFile = dirname(__DIR__) . '/data/v2_visits.csv';
-$clicks = [];
-$totalClicks = 0;
+// ── Read Legacy Clicks CSV ──
+$legacyClicksFile = dirname(__DIR__) . '/data/clicks.csv';
+$legacyClicks = [];
+$totalLegacyClicks = 0;
 
-if (file_exists($clicksFile) && ($handle = fopen($clicksFile, 'r')) !== false) {
+if (file_exists($legacyClicksFile) && ($handle = fopen($legacyClicksFile, 'r')) !== false) {
     $header = fgetcsv($handle); // skip header
     while (($row = fgetcsv($handle)) !== false) {
         if (isset($row[1]) && $row[1] !== '') {
-            $clicks[] = [
+            $legacyClicks[] = [
                 'timestamp' => $row[0],
                 'query'     => trim($row[1])
             ];
         }
     }
     fclose($handle);
-    $totalClicks = count($clicks);
+    $totalLegacyClicks = count($legacyClicks);
 }
 
-// ── Read Copies CSV (Promocode Copies) ──
-$copiesFile = dirname(__DIR__) . '/data/v2_copies.csv';
-$copies = [];
-$totalCopies = 0;
+// ── Read V2 Visits CSV (New Visits) ──
+$v2VisitsFile = dirname(__DIR__) . '/data/v2_visits.csv';
+$v2Visits = [];
+$totalV2Visits = 0;
 
-if (file_exists($copiesFile) && ($handle = fopen($copiesFile, 'r')) !== false) {
+if (file_exists($v2VisitsFile) && ($handle = fopen($v2VisitsFile, 'r')) !== false) {
     $header = fgetcsv($handle); // skip header
     while (($row = fgetcsv($handle)) !== false) {
         if (isset($row[1]) && $row[1] !== '') {
-            $copies[] = [
+            $v2Visits[] = [
                 'timestamp' => $row[0],
                 'query'     => trim($row[1])
             ];
         }
     }
     fclose($handle);
-    $totalCopies = count($copies);
+    $totalV2Visits = count($v2Visits);
 }
 
-// ── Read CTA Taps CSV (Direct Button Clicks) ──
-$ctaFile = dirname(__DIR__) . '/data/v2_cta_taps.csv';
-$ctaTaps = [];
-$totalCtaTaps = 0;
+// ── Read V2 Copies CSV (New Copies) ──
+$v2CopiesFile = dirname(__DIR__) . '/data/v2_copies.csv';
+$v2Copies = [];
+$totalV2Copies = 0;
 
-if (file_exists($ctaFile) && ($handle = fopen($ctaFile, 'r')) !== false) {
+if (file_exists($v2CopiesFile) && ($handle = fopen($v2CopiesFile, 'r')) !== false) {
     $header = fgetcsv($handle); // skip header
     while (($row = fgetcsv($handle)) !== false) {
         if (isset($row[1]) && $row[1] !== '') {
-            $ctaTaps[] = [
+            $v2Copies[] = [
                 'timestamp' => $row[0],
                 'query'     => trim($row[1])
             ];
         }
     }
     fclose($handle);
-    $totalCtaTaps = count($ctaTaps);
+    $totalV2Copies = count($v2Copies);
 }
 
-// ── Stats ──
-$todayCount = 0;
-$todayClicks = 0;
-$todayCopies = 0;
-$todayCtaTaps = 0;
+// ── Read V2 CTA Taps CSV (New CTA Clicks) ──
+$v2CtaFile = dirname(__DIR__) . '/data/v2_cta_taps.csv';
+$v2CtaTaps = [];
+$totalV2CtaTaps = 0;
+
+if (file_exists($v2CtaFile) && ($handle = fopen($v2CtaFile, 'r')) !== false) {
+    $header = fgetcsv($handle); // skip header
+    while (($row = fgetcsv($handle)) !== false) {
+        if (isset($row[1]) && $row[1] !== '') {
+            $v2CtaTaps[] = [
+                'timestamp' => $row[0],
+                'query'     => trim($row[1])
+            ];
+        }
+    }
+    fclose($handle);
+    $totalV2CtaTaps = count($v2CtaTaps);
+}
+
+// ── Daily Stats ──
+$todayLegacySubmissions = 0;
+$todayLegacyClicks = 0;
+$todayV2Visits = 0;
+$todayV2Copies = 0;
+$todayV2CtaTaps = 0;
 $today = date('Y-m-d');
 
 foreach ($submissions as $s) {
     if (strpos($s['timestamp'], $today) === 0) {
-        $todayCount++;
+        $todayLegacySubmissions++;
     }
 }
 
-foreach ($clicks as $c) {
+foreach ($legacyClicks as $c) {
     if (strpos($c['timestamp'], $today) === 0) {
-        $todayClicks++;
+        $todayLegacyClicks++;
     }
 }
 
-foreach ($copies as $cp) {
+foreach ($v2Visits as $v) {
+    if (strpos($v['timestamp'], $today) === 0) {
+        $todayV2Visits++;
+    }
+}
+
+foreach ($v2Copies as $cp) {
     if (strpos($cp['timestamp'], $today) === 0) {
-        $todayCopies++;
+        $todayV2Copies++;
     }
 }
 
-foreach ($ctaTaps as $ct) {
+foreach ($v2CtaTaps as $ct) {
     if (strpos($ct['timestamp'], $today) === 0) {
-        $todayCtaTaps++;
+        $todayV2CtaTaps++;
     }
 }
 
-// ── Aggregate Query Analytics ──
-$queryStats = [];
+// ── Aggregate Legacy Query Analytics ──
+$legacyQueryStats = [];
 
-// Track clicks per query
-foreach ($clicks as $c) {
+foreach ($legacyClicks as $c) {
     $q = $c['query'];
-    if (!isset($queryStats[$q])) {
-        $queryStats[$q] = ['clicks' => 0, 'copies' => 0, 'cta_taps' => 0];
+    if (!isset($legacyQueryStats[$q])) {
+        $legacyQueryStats[$q] = ['clicks' => 0, 'submissions' => 0];
     }
-    $queryStats[$q]['clicks']++;
+    $legacyQueryStats[$q]['clicks']++;
 }
 
-// Track copies per query
-foreach ($copies as $cp) {
+foreach ($submissions as $s) {
+    $q = $s['query'];
+    if ($q !== '—' && $q !== '') {
+        if (!isset($legacyQueryStats[$q])) {
+            $legacyQueryStats[$q] = ['clicks' => 0, 'submissions' => 0];
+        }
+        $legacyQueryStats[$q]['submissions']++;
+    }
+}
+
+uasort($legacyQueryStats, function ($a, $b) {
+    if ($a['submissions'] === $b['submissions']) {
+        return $b['clicks'] - $a['clicks'];
+    }
+    return $b['submissions'] - $a['submissions'];
+});
+
+// ── Aggregate V2 Query Analytics ──
+$v2QueryStats = [];
+
+foreach ($v2Visits as $v) {
+    $q = $v['query'];
+    if (!isset($v2QueryStats[$q])) {
+        $v2QueryStats[$q] = ['clicks' => 0, 'copies' => 0, 'cta_taps' => 0];
+    }
+    $v2QueryStats[$q]['clicks']++;
+}
+
+foreach ($v2Copies as $cp) {
     $q = $cp['query'];
-    if (!isset($queryStats[$q])) {
-        $queryStats[$q] = ['clicks' => 0, 'copies' => 0, 'cta_taps' => 0];
+    if (!isset($v2QueryStats[$q])) {
+        $v2QueryStats[$q] = ['clicks' => 0, 'copies' => 0, 'cta_taps' => 0];
     }
-    $queryStats[$q]['copies']++;
+    $v2QueryStats[$q]['copies']++;
 }
 
-// Track CTA taps per query
-foreach ($ctaTaps as $ct) {
+foreach ($v2CtaTaps as $ct) {
     $q = $ct['query'];
-    if (!isset($queryStats[$q])) {
-        $queryStats[$q] = ['clicks' => 0, 'copies' => 0, 'cta_taps' => 0];
+    if (!isset($v2QueryStats[$q])) {
+        $v2QueryStats[$q] = ['clicks' => 0, 'copies' => 0, 'cta_taps' => 0];
     }
-    $queryStats[$q]['cta_taps']++;
+    $v2QueryStats[$q]['cta_taps']++;
 }
 
-// Sort queries by CTA Taps desc, then clicks desc
-uasort($queryStats, function ($a, $b) {
+uasort($v2QueryStats, function ($a, $b) {
     if ($a['cta_taps'] === $b['cta_taps']) {
         return $b['clicks'] - $a['clicks'];
     }
@@ -194,27 +244,27 @@ uasort($queryStats, function ($a, $b) {
         </div>
     </header>
 
-    <!-- Stats Cards -->
+    <!-- ═══════════════════════════════════════
+       SECTION 1: NEW ONE-STEP FLOW
+       ═══════════════════════════════════════ -->
+    <div class="dash-section-title">Yangi Oqim (Bir Bosqichli Funnel) Ko'rsatkichlari</div>
+
+    <!-- Stats Cards (New V2 Funnel) -->
     <div class="stats-row">
         <div class="stat-card">
-            <div class="stat-value"><?php echo $totalClicks; ?></div>
-            <div class="stat-label">Jami kirishlar</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayClicks; ?></div>
+            <div class="stat-value"><?php echo $totalV2Visits; ?></div>
+            <div class="stat-label">Jami kirishlar (V2)</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayV2Visits; ?></div>
         </div>
         <div class="stat-card">
-            <div class="stat-value"><?php echo $totalCopies; ?></div>
+            <div class="stat-value"><?php echo $totalV2Copies; ?></div>
             <div class="stat-label">Promokod nusxalashlar</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayCopies; ?></div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayV2Copies; ?></div>
         </div>
         <div class="stat-card">
-            <div class="stat-value"><?php echo $totalCtaTaps; ?></div>
+            <div class="stat-value"><?php echo $totalV2CtaTaps; ?></div>
             <div class="stat-label">Direktga o'tishlar</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayCtaTaps; ?></div>
-        </div>
-        <div class="stat-card" style="opacity: 0.75;">
-            <div class="stat-value"><?php echo $totalCount; ?></div>
-            <div class="stat-label">Eski arizalar</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayCount; ?></div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayV2CtaTaps; ?></div>
         </div>
     </div>
 
@@ -229,7 +279,7 @@ uasort($queryStats, function ($a, $b) {
             <!-- Stage 1: Visits -->
             <div class="funnel-stage">
                 <span class="funnel-stage-num">01</span>
-                <div class="funnel-stage-value"><?php echo $totalClicks; ?></div>
+                <div class="funnel-stage-value"><?php echo $totalV2Visits; ?></div>
                 <div class="funnel-stage-label">Kirishlar</div>
                 <div class="funnel-stage-sub">Sahifaga tashriflar</div>
             </div>
@@ -237,7 +287,7 @@ uasort($queryStats, function ($a, $b) {
             <!-- Arrow 1 -->
             <div class="funnel-arrow">
                 <?php 
-                $copyCr = $totalClicks > 0 ? round(($totalCopies / $totalClicks) * 100, 1) : 0;
+                $copyCr = $totalV2Visits > 0 ? round(($totalV2Copies / $totalV2Visits) * 100, 1) : 0;
                 ?>
                 <div class="funnel-arrow-cr"><?php echo $copyCr; ?>% CR</div>
                 <div class="funnel-arrow-icon">
@@ -248,7 +298,7 @@ uasort($queryStats, function ($a, $b) {
             <!-- Stage 2: Copies -->
             <div class="funnel-stage">
                 <span class="funnel-stage-num">02</span>
-                <div class="funnel-stage-value"><?php echo $totalCopies; ?></div>
+                <div class="funnel-stage-value"><?php echo $totalV2Copies; ?></div>
                 <div class="funnel-stage-label">Nusxalashlar</div>
                 <div class="funnel-stage-sub">Promokod ko'chirilishi</div>
             </div>
@@ -256,8 +306,8 @@ uasort($queryStats, function ($a, $b) {
             <!-- Arrow 2 -->
             <div class="funnel-arrow">
                 <?php 
-                $ctaCr = $totalCopies > 0 ? round(($totalCtaTaps / $totalCopies) * 100, 1) : 0;
-                $overallCr = $totalClicks > 0 ? round(($totalCtaTaps / $totalClicks) * 100, 1) : 0;
+                $ctaCr = $totalV2Copies > 0 ? round(($totalV2CtaTaps / $totalV2Copies) * 100, 1) : 0;
+                $overallCr = $totalV2Visits > 0 ? round(($totalV2CtaTaps / $totalV2Visits) * 100, 1) : 0;
                 ?>
                 <div class="funnel-arrow-cr"><?php echo $ctaCr; ?>% CR</div>
                 <div class="funnel-arrow-icon">
@@ -268,7 +318,7 @@ uasort($queryStats, function ($a, $b) {
             <!-- Stage 3: CTA Taps -->
             <div class="funnel-stage">
                 <span class="funnel-stage-num">03</span>
-                <div class="funnel-stage-value"><?php echo $totalCtaTaps; ?></div>
+                <div class="funnel-stage-value"><?php echo $totalV2CtaTaps; ?></div>
                 <div class="funnel-stage-label">Direktga o'tishlar</div>
                 <div class="funnel-stage-sub">Instagram Direktga yozganlar</div>
             </div>
@@ -279,16 +329,16 @@ uasort($queryStats, function ($a, $b) {
         </div>
     </div>
 
-    <!-- Query Performance Section -->
+    <!-- Query Performance Section (New V2 Funnel) -->
     <div class="table-container" style="margin-bottom: 36px;">
         <div class="table-header-row">
-            <h2 class="table-title">Postlar samaradorligi (Query Performance)</h2>
-            <span class="table-count"><?php echo count($queryStats); ?> ta post</span>
+            <h2 class="table-title">Yangi Postlar samaradorligi (V2 Funnel Analytics)</h2>
+            <span class="table-count"><?php echo count($v2QueryStats); ?> ta post</span>
         </div>
 
-        <?php if (empty($queryStats)): ?>
+        <?php if (empty($v2QueryStats)): ?>
             <div class="table-empty">
-                <p>Hozircha hech qanday promo-postlardan bosishlar kelmagan.</p>
+                <p>Hozircha yangi oqim (V2) bo'yicha hech qanday tashriflar kelmagan.</p>
             </div>
         <?php else: ?>
             <div class="table-scroll">
@@ -306,7 +356,7 @@ uasort($queryStats, function ($a, $b) {
                     <tbody>
                         <?php 
                         $idx = 1;
-                        foreach ($queryStats as $qName => $stats): 
+                        foreach ($v2QueryStats as $qName => $stats): 
                             $cr = $stats['clicks'] > 0 ? round(($stats['cta_taps'] / $stats['clicks']) * 100, 1) : 0;
                         ?>
                         <tr>
@@ -328,14 +378,81 @@ uasort($queryStats, function ($a, $b) {
         <?php endif; ?>
     </div>
 
-    <!-- Table -->
+
+    <!-- ═══════════════════════════════════════
+       SECTION 2: LEGACY TWO-STEP FLOW
+       ═══════════════════════════════════════ -->
+    <div class="dash-section-title">Eski Oqim (Ikki Bosqichli Oqim) Statistikasi</div>
+
+    <!-- Stats Cards (Legacy Flow) -->
+    <div class="stats-row" style="opacity: 0.85;">
+        <div class="stat-card">
+            <div class="stat-value"><?php echo $totalLegacySubmissions; ?></div>
+            <div class="stat-label">Jami arizalar (Tarixiy)</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayLegacySubmissions; ?></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value"><?php echo $totalLegacyClicks; ?></div>
+            <div class="stat-label">Jami bosishlar (Tarixiy)</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayLegacyClicks; ?></div>
+        </div>
+    </div>
+
+    <!-- Legacy Query Performance Section -->
+    <div class="table-container" style="margin-bottom: 36px;">
+        <div class="table-header-row">
+            <h2 class="table-title">Eski Postlar samaradorligi (Legacy Query Performance)</h2>
+            <span class="table-count"><?php echo count($legacyQueryStats); ?> ta post</span>
+        </div>
+
+        <?php if (empty($legacyQueryStats)): ?>
+            <div class="table-empty">
+                <p>Eski oqim (V1) bo'yicha hech qanday ma'lumot topilmadi.</p>
+            </div>
+        <?php else: ?>
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="th-num">#</th>
+                            <th>Post / Query nomi (igtrgt)</th>
+                            <th>Bosishlar (Clicks)</th>
+                            <th>Arizalar (Submissions)</th>
+                            <th>Konversiya (CR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        $idx = 1;
+                        foreach ($legacyQueryStats as $qName => $stats): 
+                            $cr = $stats['clicks'] > 0 ? round(($stats['submissions'] / $stats['clicks']) * 100, 1) : 0;
+                        ?>
+                        <tr>
+                            <td class="td-num"><?php echo $idx++; ?></td>
+                            <td style="font-weight: 400; color: var(--ruffian-gold); letter-spacing: 0.05em;">
+                                <?php echo htmlspecialchars($qName); ?>
+                            </td>
+                            <td><?php echo $stats['clicks']; ?></td>
+                            <td><?php echo $stats['submissions']; ?></td>
+                            <td style="font-weight: 600; color: <?php echo $cr > 0 ? 'var(--ruffian-gold)' : 'var(--text-muted)'; ?>;">
+                                <?php echo $cr; ?>%
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- Legacy Submissions Table -->
     <div class="table-container">
         <div class="table-header-row">
             <h2 class="table-title">Barcha arizalar (Tarixiy ro'yxat)</h2>
-            <span class="table-count"><?php echo $totalCount; ?> ta</span>
+            <span class="table-count"><?php echo $totalLegacySubmissions; ?> ta</span>
         </div>
 
-        <?php if ($totalCount === 0): ?>
+        <?php if ($totalLegacySubmissions === 0): ?>
             <div class="table-empty">
                 <p>Hozircha hech qanday ariza yo'q.</p>
             </div>
@@ -354,7 +471,7 @@ uasort($queryStats, function ($a, $b) {
                     <tbody>
                         <?php foreach ($submissions as $i => $s): ?>
                         <tr>
-                            <td class="td-num"><?php echo $totalCount - $i; ?></td>
+                            <td class="td-num"><?php echo $totalLegacySubmissions - $i; ?></td>
                             <td class="td-code"><?php echo htmlspecialchars($s['code']); ?></td>
                             <td class="td-user">
                                 <a href="https://instagram.com/<?php echo htmlspecialchars($s['username']); ?>" target="_blank" rel="noopener">
