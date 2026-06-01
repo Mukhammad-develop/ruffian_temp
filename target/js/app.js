@@ -127,6 +127,20 @@
 
         var copyLabel = copyBtn ? copyBtn.querySelector('span') : null;
 
+        // Track promo copy on the backend
+        var igtrgt = '';
+        try {
+            igtrgt = sessionStorage.getItem('ruffian_igtrgt') || 'organic';
+        } catch (ex) {}
+
+        fetch('api/track_copy.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ igtrgt: igtrgt })
+        }).catch(function (err) {
+            console.error('Copy tracking failed:', err);
+        });
+
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(generatedCode).then(function () {
                 showFeedback();
@@ -183,6 +197,22 @@
     if (dmLink) {
         dmLink.addEventListener('click', function (e) {
             e.preventDefault();
+            
+            var igtrgt = '';
+            try {
+                igtrgt = sessionStorage.getItem('ruffian_igtrgt') || '';
+            } catch (ex) {}
+
+            // Track CTA tap on the backend
+            fetch('api/track_cta.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ igtrgt: igtrgt })
+            }).catch(function (err) {
+                console.error('CTA tracking failed:', err);
+            });
+
+            // Open Instagram DM
             window.open('https://ig.me/m/ruffian.uz', '_blank');
         });
     }
@@ -196,16 +226,35 @@
                 igtrgt = igtrgt.trim();
                 if (igtrgt.length > 0) {
                     sessionStorage.setItem('ruffian_igtrgt', igtrgt);
-                    
-                    // Fire tracking request to backend
-                    fetch(TRACK_API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ igtrgt: igtrgt })
-                    }).catch(function (err) {
-                        console.error('Click tracking failed:', err);
-                    });
                 }
+            }
+
+            var storedIgtrgt = '';
+            try {
+                storedIgtrgt = sessionStorage.getItem('ruffian_igtrgt');
+            } catch (ex) {}
+            if (!storedIgtrgt) {
+                storedIgtrgt = 'organic';
+            }
+
+            // Deduplicate page visits in the same session tab to prevent refresh spikes
+            var sessionTracked = false;
+            try {
+                sessionTracked = sessionStorage.getItem('ruffian_tracked_visit') === 'true';
+            } catch (e) {}
+
+            if (!sessionTracked) {
+                fetch(TRACK_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ igtrgt: storedIgtrgt })
+                }).then(function () {
+                    try {
+                        sessionStorage.setItem('ruffian_tracked_visit', 'true');
+                    } catch (e) {}
+                }).catch(function (err) {
+                    console.error('Click tracking failed:', err);
+                });
             }
         } catch (e) {
             console.error('Error handling query tracking:', e);

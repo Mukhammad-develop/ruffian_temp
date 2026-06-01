@@ -1,7 +1,7 @@
 <?php
 /**
- * Ruffian Target Promotion — Click Tracking API Endpoint
- * Receives igtrgt parameter from landing page visits and logs to clicks.csv.
+ * Ruffian Target Promotion — CTA Tracking API Endpoint
+ * Receives CTA button taps and logs them to cta_taps.csv.
  *
  * Hardened for shared hosting:
  *   - Reads JSON body AND falls back to form-encoded POST
@@ -12,7 +12,6 @@
 
 // Always output JSON — catch fatal errors too
 ob_start();
-error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 register_shutdown_function(function () {
     $error = error_get_last();
     if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
@@ -68,7 +67,7 @@ if ($igtrgt !== '') {
 }
 
 // ── CSV file path (relative to this script) ──
-$csvFile = dirname(__DIR__) . '/data/clicks.csv';
+$csvFile = dirname(__DIR__) . '/data/cta_taps.csv';
 
 // Ensure data directory exists
 $dataDir = dirname($csvFile);

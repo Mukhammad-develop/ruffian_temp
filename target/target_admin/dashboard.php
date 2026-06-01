@@ -12,7 +12,7 @@ if (!isset($_SESSION['ruffian_admin_auth']) || $_SESSION['ruffian_admin_auth'] !
     exit();
 }
 
-// ── Read Submissions CSV ──
+// ── Read Submissions CSV (Historical Registrations) ──
 $csvFile = dirname(__DIR__) . '/data/submissions.csv';
 $submissions = [];
 $totalCount = 0;
@@ -36,7 +36,7 @@ if (file_exists($csvFile) && ($handle = fopen($csvFile, 'r')) !== false) {
 // Reverse — newest first
 $submissions = array_reverse($submissions);
 
-// ── Read Clicks CSV ──
+// ── Read Clicks CSV (Visits) ──
 $clicksFile = dirname(__DIR__) . '/data/clicks.csv';
 $clicks = [];
 $totalClicks = 0;
@@ -55,9 +55,49 @@ if (file_exists($clicksFile) && ($handle = fopen($clicksFile, 'r')) !== false) {
     $totalClicks = count($clicks);
 }
 
+// ── Read Copies CSV (Promocode Copies) ──
+$copiesFile = dirname(__DIR__) . '/data/copies.csv';
+$copies = [];
+$totalCopies = 0;
+
+if (file_exists($copiesFile) && ($handle = fopen($copiesFile, 'r')) !== false) {
+    $header = fgetcsv($handle); // skip header
+    while (($row = fgetcsv($handle)) !== false) {
+        if (isset($row[1]) && $row[1] !== '') {
+            $copies[] = [
+                'timestamp' => $row[0],
+                'query'     => trim($row[1])
+            ];
+        }
+    }
+    fclose($handle);
+    $totalCopies = count($copies);
+}
+
+// ── Read CTA Taps CSV (Direct Button Clicks) ──
+$ctaFile = dirname(__DIR__) . '/data/cta_taps.csv';
+$ctaTaps = [];
+$totalCtaTaps = 0;
+
+if (file_exists($ctaFile) && ($handle = fopen($ctaFile, 'r')) !== false) {
+    $header = fgetcsv($handle); // skip header
+    while (($row = fgetcsv($handle)) !== false) {
+        if (isset($row[1]) && $row[1] !== '') {
+            $ctaTaps[] = [
+                'timestamp' => $row[0],
+                'query'     => trim($row[1])
+            ];
+        }
+    }
+    fclose($handle);
+    $totalCtaTaps = count($ctaTaps);
+}
+
 // ── Stats ──
 $todayCount = 0;
 $todayClicks = 0;
+$todayCopies = 0;
+$todayCtaTaps = 0;
 $today = date('Y-m-d');
 
 foreach ($submissions as $s) {
@@ -72,6 +112,18 @@ foreach ($clicks as $c) {
     }
 }
 
+foreach ($copies as $cp) {
+    if (strpos($cp['timestamp'], $today) === 0) {
+        $todayCopies++;
+    }
+}
+
+foreach ($ctaTaps as $ct) {
+    if (strpos($ct['timestamp'], $today) === 0) {
+        $todayCtaTaps++;
+    }
+}
+
 // ── Aggregate Query Analytics ──
 $queryStats = [];
 
@@ -79,28 +131,35 @@ $queryStats = [];
 foreach ($clicks as $c) {
     $q = $c['query'];
     if (!isset($queryStats[$q])) {
-        $queryStats[$q] = ['clicks' => 0, 'submissions' => 0];
+        $queryStats[$q] = ['clicks' => 0, 'copies' => 0, 'cta_taps' => 0];
     }
     $queryStats[$q]['clicks']++;
 }
 
-// Track submissions per query
-foreach ($submissions as $s) {
-    $q = $s['query'];
-    if ($q !== '—' && $q !== '') {
-        if (!isset($queryStats[$q])) {
-            $queryStats[$q] = ['clicks' => 0, 'submissions' => 0];
-        }
-        $queryStats[$q]['submissions']++;
+// Track copies per query
+foreach ($copies as $cp) {
+    $q = $cp['query'];
+    if (!isset($queryStats[$q])) {
+        $queryStats[$q] = ['clicks' => 0, 'copies' => 0, 'cta_taps' => 0];
     }
+    $queryStats[$q]['copies']++;
 }
 
-// Sort queries by submissions desc, then clicks desc
+// Track CTA taps per query
+foreach ($ctaTaps as $ct) {
+    $q = $ct['query'];
+    if (!isset($queryStats[$q])) {
+        $queryStats[$q] = ['clicks' => 0, 'copies' => 0, 'cta_taps' => 0];
+    }
+    $queryStats[$q]['cta_taps']++;
+}
+
+// Sort queries by CTA Taps desc, then clicks desc
 uasort($queryStats, function ($a, $b) {
-    if ($a['submissions'] === $b['submissions']) {
+    if ($a['cta_taps'] === $b['cta_taps']) {
         return $b['clicks'] - $a['clicks'];
     }
-    return $b['submissions'] - $a['submissions'];
+    return $b['cta_taps'] - $a['cta_taps'];
 });
 ?>
 <!DOCTYPE html>
@@ -138,20 +197,85 @@ uasort($queryStats, function ($a, $b) {
     <!-- Stats Cards -->
     <div class="stats-row">
         <div class="stat-card">
-            <div class="stat-value"><?php echo $totalCount; ?></div>
-            <div class="stat-label">Jami arizalar</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"><?php echo $todayCount; ?></div>
-            <div class="stat-label">Bugun arizalar</div>
-        </div>
-        <div class="stat-card">
             <div class="stat-value"><?php echo $totalClicks; ?></div>
-            <div class="stat-label">Jami bosishlar</div>
+            <div class="stat-label">Jami kirishlar</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayClicks; ?></div>
         </div>
         <div class="stat-card">
-            <div class="stat-value"><?php echo $todayClicks; ?></div>
-            <div class="stat-label">Bugun bosishlar</div>
+            <div class="stat-value"><?php echo $totalCopies; ?></div>
+            <div class="stat-label">Promokod nusxalashlar</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayCopies; ?></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value"><?php echo $totalCtaTaps; ?></div>
+            <div class="stat-label">Direktga o'tishlar</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayCtaTaps; ?></div>
+        </div>
+        <div class="stat-card" style="opacity: 0.75;">
+            <div class="stat-value"><?php echo $totalCount; ?></div>
+            <div class="stat-label">Eski arizalar</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayCount; ?></div>
+        </div>
+    </div>
+
+    <!-- Huni Tahlili Section -->
+    <div class="funnel-container">
+        <div class="funnel-header">
+            <h2 class="table-title" style="margin: 0; border: none; padding: 0;">Konversiya Hunisi (Funnel Analytics)</h2>
+            <span class="table-count">Real vaqt rejimida</span>
+        </div>
+        
+        <div class="funnel-stages">
+            <!-- Stage 1: Visits -->
+            <div class="funnel-stage">
+                <span class="funnel-stage-num">01</span>
+                <div class="funnel-stage-value"><?php echo $totalClicks; ?></div>
+                <div class="funnel-stage-label">Kirishlar</div>
+                <div class="funnel-stage-sub">Sahifaga tashriflar</div>
+            </div>
+            
+            <!-- Arrow 1 -->
+            <div class="funnel-arrow">
+                <?php 
+                $copyCr = $totalClicks > 0 ? round(($totalCopies / $totalClicks) * 100, 1) : 0;
+                ?>
+                <div class="funnel-arrow-cr"><?php echo $copyCr; ?>% CR</div>
+                <div class="funnel-arrow-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </div>
+            </div>
+            
+            <!-- Stage 2: Copies -->
+            <div class="funnel-stage">
+                <span class="funnel-stage-num">02</span>
+                <div class="funnel-stage-value"><?php echo $totalCopies; ?></div>
+                <div class="funnel-stage-label">Nusxalashlar</div>
+                <div class="funnel-stage-sub">Promokod ko'chirilishi</div>
+            </div>
+            
+            <!-- Arrow 2 -->
+            <div class="funnel-arrow">
+                <?php 
+                $ctaCr = $totalCopies > 0 ? round(($totalCtaTaps / $totalCopies) * 100, 1) : 0;
+                $overallCr = $totalClicks > 0 ? round(($totalCtaTaps / $totalClicks) * 100, 1) : 0;
+                ?>
+                <div class="funnel-arrow-cr"><?php echo $ctaCr; ?>% CR</div>
+                <div class="funnel-arrow-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </div>
+            </div>
+            
+            <!-- Stage 3: CTA Taps -->
+            <div class="funnel-stage">
+                <span class="funnel-stage-num">03</span>
+                <div class="funnel-stage-value"><?php echo $totalCtaTaps; ?></div>
+                <div class="funnel-stage-label">Direktga o'tishlar</div>
+                <div class="funnel-stage-sub">Instagram Direktga yozganlar</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 24px; text-align: center; font-family: 'Montserrat', Arial, sans-serif; font-size: 12px; color: var(--text-muted); letter-spacing: 0.05em;">
+            Umumiy Kirishlar ➔ Direktga o'tish konversiyasi (CR): <strong style="color: var(--ruffian-gold); font-size: 14px;"><?php echo $overallCr; ?>%</strong>
         </div>
     </div>
 
@@ -173,16 +297,17 @@ uasort($queryStats, function ($a, $b) {
                         <tr>
                             <th class="th-num">#</th>
                             <th>Post / Query nomi (igtrgt)</th>
-                            <th>Bosishlar (Clicks)</th>
-                            <th>Arizalar (Submissions)</th>
-                            <th>Konversiya (CR)</th>
+                            <th>Kirishlar (Visits)</th>
+                            <th>Nusxalashlar (Copies)</th>
+                            <th>Direktga o'tishlar (CTA Taps)</th>
+                            <th>Konversiya (Visits → CTA)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php 
                         $idx = 1;
                         foreach ($queryStats as $qName => $stats): 
-                            $cr = $stats['clicks'] > 0 ? round(($stats['submissions'] / $stats['clicks']) * 100, 1) : 0;
+                            $cr = $stats['clicks'] > 0 ? round(($stats['cta_taps'] / $stats['clicks']) * 100, 1) : 0;
                         ?>
                         <tr>
                             <td class="td-num"><?php echo $idx++; ?></td>
@@ -190,7 +315,8 @@ uasort($queryStats, function ($a, $b) {
                                 <?php echo htmlspecialchars($qName); ?>
                             </td>
                             <td><?php echo $stats['clicks']; ?></td>
-                            <td><?php echo $stats['submissions']; ?></td>
+                            <td><?php echo $stats['copies']; ?></td>
+                            <td><?php echo $stats['cta_taps']; ?></td>
                             <td style="font-weight: 600; color: <?php echo $cr > 0 ? 'var(--ruffian-gold)' : 'var(--text-muted)'; ?>;">
                                 <?php echo $cr; ?>%
                             </td>
@@ -205,7 +331,7 @@ uasort($queryStats, function ($a, $b) {
     <!-- Table -->
     <div class="table-container">
         <div class="table-header-row">
-            <h2 class="table-title">Barcha arizalar</h2>
+            <h2 class="table-title">Barcha arizalar (Tarixiy ro'yxat)</h2>
             <span class="table-count"><?php echo $totalCount; ?> ta</span>
         </div>
 
