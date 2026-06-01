@@ -23,7 +23,7 @@
     var codeValueEl = document.getElementById('code-value');
     var copyBtn = document.getElementById('copy-btn');
 
-    var generatedCode = '';
+    var generatedCode = 'RUFFIAN-SAMPLE';
 
     // ── Step Navigation ──
     function goToStep(n) {
@@ -63,61 +63,63 @@
     }
 
     // ── Form Submit ──
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        hideError();
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            hideError();
 
-        var result = validateUsername(input.value);
-        if (!result.valid) {
-            showError(result.msg);
-            return;
-        }
-
-        // Loading state
-        submitBtn.disabled = true;
-        submitBtn.classList.add('btn-loading');
-
-        var igtrgt = '';
-        try {
-            igtrgt = sessionStorage.getItem('ruffian_igtrgt') || '';
-        } catch (e) {}
-
-        fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ instagram: result.clean, igtrgt: igtrgt })
-        })
-        .then(function (res) {
-            return res.text().then(function (text) {
-                return { status: res.status, text: text };
-            });
-        })
-        .then(function (res) {
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('btn-loading');
-
-            var data = safeParseJSON(res.text);
-
-            if (!data) {
-                // Server returned non-JSON (HTML error page, 500, etc.)
-                showError('Server xatoligi. Sahifani yangilab qaytadan urinib ko\'ring.');
+            var result = validateUsername(input.value);
+            if (!result.valid) {
+                showError(result.msg);
                 return;
             }
 
-            if (data.success) {
-                generatedCode = data.code;
-                codeValueEl.textContent = generatedCode;
-                goToStep(2);
-            } else {
-                showError(data.error || 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
-            }
-        })
-        .catch(function (err) {
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('btn-loading');
-            showError('Serverga ulanib bo\'lmadi. Internet aloqangizni tekshiring.');
+            // Loading state
+            submitBtn.disabled = true;
+            submitBtn.classList.add('btn-loading');
+
+            var igtrgt = '';
+            try {
+                igtrgt = sessionStorage.getItem('ruffian_igtrgt') || '';
+            } catch (e) {}
+
+            fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ instagram: result.clean, igtrgt: igtrgt })
+            })
+            .then(function (res) {
+                return res.text().then(function (text) {
+                    return { status: res.status, text: text };
+                });
+            })
+            .then(function (res) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('btn-loading');
+
+                var data = safeParseJSON(res.text);
+
+                if (!data) {
+                    // Server returned non-JSON (HTML error page, 500, etc.)
+                    showError('Server xatoligi. Sahifani yangilab qaytadan urinib ko\'ring.');
+                    return;
+                }
+
+                if (data.success) {
+                    generatedCode = data.code;
+                    codeValueEl.textContent = generatedCode;
+                    goToStep(2);
+                } else {
+                    showError(data.error || 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+                }
+            })
+            .catch(function (err) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('btn-loading');
+                showError('Serverga ulanib bo\'lmadi. Internet aloqangizni tekshiring.');
+            });
         });
-    });
+    }
 
     // ── Copy Code ──
     if (copyBtn) {
@@ -187,6 +189,6 @@
 
     // ── Init ──
     handleQueryTracking();
-    goToStep(1);
+    goToStep(2);
 
 })();
