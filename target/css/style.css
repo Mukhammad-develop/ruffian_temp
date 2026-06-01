@@ -494,22 +494,33 @@ body::before {
 .copy-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.45);
+    justify-content: center;
+    gap: 8px;
+    background: rgba(233, 182, 49, 0.06);
+    border: 1px solid rgba(233, 182, 49, 0.35);
+    color: var(--ruffian-gold);
     font-family: 'Montserrat', Arial, sans-serif;
     font-size: 11px;
+    font-weight: 400;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    padding: 6px 0;
-    transition: color var(--transition-speed) ease;
-    margin-top: 8px;
+    padding: 10px 24px;
+    transition: all var(--transition-speed) ease;
+    margin-top: 16px;
+    border-radius: 2px;
 }
 
 .copy-btn:hover {
-    color: var(--ruffian-gold);
+    background: rgba(233, 182, 49, 0.12);
+    border-color: var(--ruffian-gold);
+    color: var(--gold-highlight);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.copy-btn:active {
+    transform: translateY(0);
 }
 
 .copy-btn svg {
