@@ -122,35 +122,45 @@
     }
 
     // ── Copy Code ──
-    if (copyBtn) {
-        copyBtn.addEventListener('click', function () {
-            if (!generatedCode) return;
+    function triggerCopy() {
+        if (!generatedCode) return;
 
-            var copyLabel = copyBtn.querySelector('span');
+        var copyLabel = copyBtn ? copyBtn.querySelector('span') : null;
 
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(generatedCode).then(function () {
-                    copyLabel.textContent = 'Nusxalandi';
-                    setTimeout(function () { copyLabel.textContent = 'Nusxalash'; }, 2000);
-                }).catch(function () {
-                    fallbackCopy();
-                });
-            } else {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(generatedCode).then(function () {
+                showFeedback();
+            }).catch(function () {
                 fallbackCopy();
-            }
+            });
+        } else {
+            fallbackCopy();
+        }
 
-            function fallbackCopy() {
-                var ta = document.createElement('textarea');
-                ta.value = generatedCode;
-                ta.style.cssText = 'position:fixed;opacity:0;left:-9999px';
-                document.body.appendChild(ta);
-                ta.select();
-                try { document.execCommand('copy'); } catch (e) {}
-                document.body.removeChild(ta);
+        function fallbackCopy() {
+            var ta = document.createElement('textarea');
+            ta.value = generatedCode;
+            ta.style.cssText = 'position:fixed;opacity:0;left:-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
+            showFeedback();
+        }
+
+        function showFeedback() {
+            if (copyLabel) {
                 copyLabel.textContent = 'Nusxalandi';
                 setTimeout(function () { copyLabel.textContent = 'Nusxalash'; }, 2000);
             }
-        });
+        }
+    }
+
+    if (copyBtn) {
+        copyBtn.addEventListener('click', triggerCopy);
+    }
+    if (codeValueEl) {
+        codeValueEl.addEventListener('click', triggerCopy);
     }
 
     // ── DM link ──
