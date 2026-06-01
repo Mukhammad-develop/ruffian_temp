@@ -37,7 +37,7 @@ if (file_exists($csvFile) && ($handle = fopen($csvFile, 'r')) !== false) {
 $submissions = array_reverse($submissions);
 
 // ── Read Clicks CSV (Visits) ──
-$clicksFile = dirname(__DIR__) . '/data/clicks.csv';
+$clicksFile = dirname(__DIR__) . '/data/v2_visits.csv';
 $clicks = [];
 $totalClicks = 0;
 
@@ -56,7 +56,7 @@ if (file_exists($clicksFile) && ($handle = fopen($clicksFile, 'r')) !== false) {
 }
 
 // ── Read Copies CSV (Promocode Copies) ──
-$copiesFile = dirname(__DIR__) . '/data/copies.csv';
+$copiesFile = dirname(__DIR__) . '/data/v2_copies.csv';
 $copies = [];
 $totalCopies = 0;
 
@@ -75,7 +75,7 @@ if (file_exists($copiesFile) && ($handle = fopen($copiesFile, 'r')) !== false) {
 }
 
 // ── Read CTA Taps CSV (Direct Button Clicks) ──
-$ctaFile = dirname(__DIR__) . '/data/cta_taps.csv';
+$ctaFile = dirname(__DIR__) . '/data/v2_cta_taps.csv';
 $ctaTaps = [];
 $totalCtaTaps = 0;
 

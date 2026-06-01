@@ -67,7 +67,7 @@ if ($igtrgt !== '') {
 }
 
 // ── CSV file path (relative to this script) ──
-$csvFile = dirname(__DIR__) . '/data/copies.csv';
+$csvFile = dirname(__DIR__) . '/data/v2_copies.csv';
 
 // Ensure data directory exists
 $dataDir = dirname($csvFile);
