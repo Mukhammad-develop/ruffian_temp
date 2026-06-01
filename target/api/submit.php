@@ -143,7 +143,7 @@ if ($existingUserCode !== null) {
 }
 
 // ── Use static promo code ──
-$code = 'RUFFIAN-R1SK8';
+$code = 'RUFFIAN-FP31FI8';
 
 // ── Timestamp ──
 $timestamp = date('Y-m-d H:i:s');

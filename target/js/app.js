@@ -23,7 +23,7 @@
     var codeValueEl = document.getElementById('code-value');
     var copyBtn = document.getElementById('copy-btn');
 
-    var generatedCode = 'RUFFIAN-R1SK8';
+    var generatedCode = 'RUFFIAN-FP31FI8';
 
     // ── Step Navigation ──
     function goToStep(n) {
