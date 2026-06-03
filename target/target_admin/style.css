@@ -710,4 +710,47 @@ body::before {
     background: var(--ruffian-gold);
 }
 
+/* ── Collapsible Sections (V2 and Legacy V1) ── */
+.toggle-older-btn {
+    background: #000;
+    border: 1px solid var(--ruffian-gold);
+    color: var(--ruffian-gold);
+    padding: 10px 24px;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 0;
+}
+
+.toggle-older-btn:hover {
+    background: var(--ruffian-gold);
+    color: #000;
+    box-shadow: 0 0 15px rgba(233, 182, 49, 0.2);
+}
+
+.older-sections-collapsed {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.older-sections-expanded {
+    display: block;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.chevron-rotate {
+    transform: rotate(180deg);
+}
+
+
 

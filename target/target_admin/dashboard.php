@@ -283,244 +283,6 @@ uasort($eduQueryStats, function ($a, $b) {
     </header>
 
     <!-- ═══════════════════════════════════════
-       SECTION 1: NEW ONE-STEP FLOW
-       ═══════════════════════════════════════ -->
-    <div class="dash-section-title">Yangi Oqim (Bir Bosqichli Funnel) Ko'rsatkichlari</div>
-
-    <!-- Stats Cards (New V2 Funnel) -->
-    <div class="stats-row">
-        <div class="stat-card">
-            <div class="stat-value"><?php echo $totalV2Visits; ?></div>
-            <div class="stat-label">Jami kirishlar (V2)</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayV2Visits; ?></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"><?php echo $totalV2Copies; ?></div>
-            <div class="stat-label">Promokod nusxalashlar</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayV2Copies; ?></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"><?php echo $totalV2CtaTaps; ?></div>
-            <div class="stat-label">Direktga o'tishlar</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayV2CtaTaps; ?></div>
-        </div>
-    </div>
-
-    <!-- Huni Tahlili Section -->
-    <div class="funnel-container">
-        <div class="funnel-header">
-            <h2 class="table-title" style="margin: 0; border: none; padding: 0;">Konversiya Hunisi (Funnel Analytics)</h2>
-            <span class="table-count">Real vaqt rejimida</span>
-        </div>
-        
-        <div class="funnel-stages">
-            <!-- Stage 1: Visits -->
-            <div class="funnel-stage">
-                <span class="funnel-stage-num">01</span>
-                <div class="funnel-stage-value"><?php echo $totalV2Visits; ?></div>
-                <div class="funnel-stage-label">Kirishlar</div>
-                <div class="funnel-stage-sub">Sahifaga tashriflar</div>
-            </div>
-            
-            <!-- Arrow 1 -->
-            <div class="funnel-arrow">
-                <?php 
-                $copyCr = $totalV2Visits > 0 ? round(($totalV2Copies / $totalV2Visits) * 100, 1) : 0;
-                ?>
-                <div class="funnel-arrow-cr"><?php echo $copyCr; ?>% CR</div>
-                <div class="funnel-arrow-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </div>
-            </div>
-            
-            <!-- Stage 2: Copies -->
-            <div class="funnel-stage">
-                <span class="funnel-stage-num">02</span>
-                <div class="funnel-stage-value"><?php echo $totalV2Copies; ?></div>
-                <div class="funnel-stage-label">Nusxalashlar</div>
-                <div class="funnel-stage-sub">Promokod ko'chirilishi</div>
-            <!-- Stage 3: CTA Taps -->
-            <div class="funnel-stage">
-                <span class="funnel-stage-num">03</span>
-                <div class="funnel-stage-value"><?php echo $totalV2CtaTaps; ?></div>
-                <div class="funnel-stage-label">Direktga o'tishlar</div>
-                <div class="funnel-stage-sub">Instagram Direktga yozganlar</div>
-            </div>
-        </div>
-        
-        <div style="margin-top: 24px; text-align: center; font-family: 'Montserrat', Arial, sans-serif; font-size: 12px; color: var(--text-muted); letter-spacing: 0.05em;">
-            Umumiy Kirishlar ➔ Direktga o'tish konversiyasi (CR): <strong style="color: var(--ruffian-gold); font-size: 14px;"><?php echo $overallCr; ?>%</strong>
-        </div>
-    </div>
-
-    <!-- Query Performance Section (New V2 Funnel) -->
-    <div class="table-container" style="margin-bottom: 36px;">
-        <div class="table-header-row">
-            <h2 class="table-title">Yangi Postlar samaradorligi (V2 Funnel Analytics)</h2>
-            <span class="table-count"><?php echo count($v2QueryStats); ?> ta post</span>
-        </div>
-
-        <?php if (empty($v2QueryStats)): ?>
-            <div class="table-empty">
-                <p>Hozircha yangi oqim (V2) bo'yicha hech qanday tashriflar kelmagan.</p>
-            </div>
-        <?php else: ?>
-            <div class="table-scroll">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th class="th-num">#</th>
-                            <th>Post / Query nomi (igtrgt)</th>
-                            <th>Kirishlar (Visits)</th>
-                            <th>Nusxalashlar (Copies)</th>
-                            <th>Direktga o'tishlar (CTA Taps)</th>
-                            <th>Konversiya (Visits → CTA)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        $idx = 1;
-                        foreach ($v2QueryStats as $qName => $stats): 
-                            $cr = $stats['clicks'] > 0 ? round(($stats['cta_taps'] / $stats['clicks']) * 100, 1) : 0;
-                        ?>
-                        <tr>
-                            <td class="td-num"><?php echo $idx++; ?></td>
-                            <td style="font-weight: 400; color: var(--ruffian-gold); letter-spacing: 0.05em;">
-                                <?php echo htmlspecialchars($qName); ?>
-                            </td>
-                            <td><?php echo $stats['clicks']; ?></td>
-                            <td><?php echo $stats['copies']; ?></td>
-                            <td><?php echo $stats['cta_taps']; ?></td>
-                            <td style="font-weight: 600; color: <?php echo $cr > 0 ? 'var(--ruffian-gold)' : 'var(--text-muted)'; ?>;">
-                                <?php echo $cr; ?>%
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
-    </div>
-
-
-    <!-- ═══════════════════════════════════════
-       SECTION 2: LEGACY TWO-STEP FLOW
-       ═══════════════════════════════════════ -->
-    <div class="dash-section-title">Eski Oqim (Ikki Bosqichli Oqim) Statistikasi</div>
-
-    <!-- Stats Cards (Legacy Flow) -->
-    <div class="stats-row" style="opacity: 0.85;">
-        <div class="stat-card">
-            <div class="stat-value"><?php echo $totalLegacySubmissions; ?></div>
-            <div class="stat-label">Jami arizalar (Tarixiy)</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayLegacySubmissions; ?></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"><?php echo $totalLegacyClicks; ?></div>
-            <div class="stat-label">Jami bosishlar (Tarixiy)</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayLegacyClicks; ?></div>
-        </div>
-    </div>
-
-    <!-- Legacy Query Performance Section -->
-    <div class="table-container" style="margin-bottom: 36px;">
-        <div class="table-header-row">
-            <h2 class="table-title">Eski Postlar samaradorligi (Legacy Query Performance)</h2>
-            <span class="table-count"><?php echo count($legacyQueryStats); ?> ta post</span>
-        </div>
-
-        <?php if (empty($legacyQueryStats)): ?>
-            <div class="table-empty">
-                <p>Eski oqim (V1) bo'yicha hech qanday ma'lumot topilmadi.</p>
-            </div>
-        <?php else: ?>
-            <div class="table-scroll">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th class="th-num">#</th>
-                            <th>Post / Query nomi (igtrgt)</th>
-                            <th>Bosishlar (Clicks)</th>
-                            <th>Arizalar (Submissions)</th>
-                            <th>Konversiya (CR)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        $idx = 1;
-                        foreach ($legacyQueryStats as $qName => $stats): 
-                            $cr = $stats['clicks'] > 0 ? round(($stats['submissions'] / $stats['clicks']) * 100, 1) : 0;
-                        ?>
-                        <tr>
-                            <td class="td-num"><?php echo $idx++; ?></td>
-                            <td style="font-weight: 400; color: var(--ruffian-gold); letter-spacing: 0.05em;">
-                                <?php echo htmlspecialchars($qName); ?>
-                            </td>
-                            <td><?php echo $stats['clicks']; ?></td>
-                            <td><?php echo $stats['submissions']; ?></td>
-                            <td style="font-weight: 600; color: <?php echo $cr > 0 ? 'var(--ruffian-gold)' : 'var(--text-muted)'; ?>;">
-                                <?php echo $cr; ?>%
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
-    </div>
-
-    <!-- Legacy Submissions Table -->
-    <div class="table-container">
-        <div class="table-header-row">
-            <h2 class="table-title">Barcha arizalar (Tarixiy ro'yxat)</h2>
-            <span class="table-count"><?php echo $totalLegacySubmissions; ?> ta</span>
-        </div>
-
-        <?php if ($totalLegacySubmissions === 0): ?>
-            <div class="table-empty">
-                <p>Hozircha hech qanday ariza yo'q.</p>
-            </div>
-        <?php else: ?>
-            <div class="table-scroll">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th class="th-num">#</th>
-                            <th class="th-code">Promokod</th>
-                            <th class="th-user">Instagram</th>
-                            <th>Manba (Source)</th>
-                            <th class="th-time">Vaqt</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($submissions as $i => $s): ?>
-                        <tr>
-                            <td class="td-num"><?php echo $totalLegacySubmissions - $i; ?></td>
-                            <td class="td-code"><?php echo htmlspecialchars($s['code']); ?></td>
-                            <td class="td-user">
-                                <a href="https://instagram.com/<?php echo htmlspecialchars($s['username']); ?>" target="_blank" rel="noopener">
-                                    @<?php echo htmlspecialchars($s['username']); ?>
-                                </a>
-                            </td>
-                            <td>
-                                <?php if ($s['query'] !== '—' && $s['query'] !== ''): ?>
-                                    <span style="display: inline-block; padding: 2px 8px; font-size: 11px; background: rgba(233, 182, 49, 0.1); border: 1px solid rgba(233, 182, 49, 0.25); color: var(--ruffian-gold); letter-spacing: 0.03em;">
-                                        <?php echo htmlspecialchars($s['query']); ?>
-                                    </span>
-                                <?php else: ?>
-                                    <span style="color: var(--text-muted); font-size: 11px;">to'g'ridan-to'g'ri</span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="td-time"><?php echo htmlspecialchars($s['timestamp']); ?></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
-    </div>
-
-    <!-- ═══════════════════════════════════════
        SECTION 3: EDU FLOW
        ═══════════════════════════════════════ -->
     <div class="dash-section-title">Edu Oqim (3 Qadamli Ta'lim Sahifasi) Statistikasi</div>
@@ -579,12 +341,287 @@ uasort($eduQueryStats, function ($a, $b) {
         <?php endif; ?>
     </div>
 
+    <!-- Divider and Collapse Toggle for V2 and V1 Legacy sections -->
+    <div class="toggle-divider-container" style="text-align: center; margin: 48px 0; position: relative;">
+        <hr class="toggle-divider" style="border: 0; border-top: 1px solid rgba(233, 182, 49, 0.2); position: absolute; top: 50%; left: 0; right: 0; margin: 0; z-index: 1;">
+        <button id="toggle-older-btn" class="toggle-older-btn">
+            Ko'proq ko'rish
+            <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; transition: transform 0.3s ease; vertical-align: middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+    </div>
+
+    <!-- Wrapper for Older Sections (V2 and Legacy V1) -->
+    <div id="older-sections-wrapper" class="older-sections-collapsed">
+
+        <!-- ═══════════════════════════════════════
+           SECTION 1: NEW ONE-STEP FLOW
+           ═══════════════════════════════════════ -->
+        <div class="dash-section-title">Yangi Oqim (Bir Bosqichli Funnel) Ko'rsatkichlari</div>
+
+        <!-- Stats Cards (New V2 Funnel) -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value"><?php echo $totalV2Visits; ?></div>
+                <div class="stat-label">Jami kirishlar (V2)</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayV2Visits; ?></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value"><?php echo $totalV2Copies; ?></div>
+                <div class="stat-label">Promokod nusxalashlar</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayV2Copies; ?></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value"><?php echo $totalV2CtaTaps; ?></div>
+                <div class="stat-label">Direktga o'tishlar</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayV2CtaTaps; ?></div>
+            </div>
+        </div>
+
+        <!-- Huni Tahlili Section -->
+        <div class="funnel-container">
+            <div class="funnel-header">
+                <h2 class="table-title" style="margin: 0; border: none; padding: 0;">Konversiya Hunisi (Funnel Analytics)</h2>
+                <span class="table-count">Real vaqt rejimida</span>
+            </div>
+            
+            <div class="funnel-stages">
+                <!-- Stage 1: Visits -->
+                <div class="funnel-stage">
+                    <span class="funnel-stage-num">01</span>
+                    <div class="funnel-stage-value"><?php echo $totalV2Visits; ?></div>
+                    <div class="funnel-stage-label">Kirishlar</div>
+                    <div class="funnel-stage-sub">Sahifaga tashriflar</div>
+                </div>
+                
+                <!-- Arrow 1 -->
+                <div class="funnel-arrow">
+                    <?php 
+                    $copyCr = $totalV2Visits > 0 ? round(($totalV2Copies / $totalV2Visits) * 100, 1) : 0;
+                    ?>
+                    <div class="funnel-arrow-cr"><?php echo $copyCr; ?>% CR</div>
+                    <div class="funnel-arrow-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </div>
+                </div>
+                
+                <!-- Stage 2: Copies -->
+                <div class="funnel-stage">
+                    <span class="funnel-stage-num">02</span>
+                    <div class="funnel-stage-value"><?php echo $totalV2Copies; ?></div>
+                    <div class="funnel-stage-label">Nusxalashlar</div>
+                    <div class="funnel-stage-sub">Promokod ko'chirilishi</div>
+                </div>
+                <!-- Stage 3: CTA Taps -->
+                <div class="funnel-stage">
+                    <span class="funnel-stage-num">03</span>
+                    <div class="funnel-stage-value"><?php echo $totalV2CtaTaps; ?></div>
+                    <div class="funnel-stage-label">Direktga o'tishlar</div>
+                    <div class="funnel-stage-sub">Instagram Direktga yozganlar</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 24px; text-align: center; font-family: 'Montserrat', Arial, sans-serif; font-size: 12px; color: var(--text-muted); letter-spacing: 0.05em;">
+                Umumiy Kirishlar ➔ Direktga o'tish konversiyasi (CR): <strong style="color: var(--ruffian-gold); font-size: 14px;"><?php echo $overallCr; ?>%</strong>
+            </div>
+        </div>
+
+        <!-- Query Performance Section (New V2 Funnel) -->
+        <div class="table-container" style="margin-bottom: 36px;">
+            <div class="table-header-row">
+                <h2 class="table-title">Yangi Postlar samaradorligi (V2 Funnel Analytics)</h2>
+                <span class="table-count"><?php echo count($v2QueryStats); ?> ta post</span>
+            </div>
+
+            <?php if (empty($v2QueryStats)): ?>
+                <div class="table-empty">
+                    <p>Hozircha yangi oqim (V2) bo'yicha hech qanday tashriflar kelmagan.</p>
+                </div>
+            <?php else: ?>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="th-num">#</th>
+                                <th>Post / Query nomi (igtrgt)</th>
+                                <th>Kirishlar (Visits)</th>
+                                <th>Nusxalashlar (Copies)</th>
+                                <th>Direktga o'tishlar (CTA Taps)</th>
+                                <th>Konversiya (Visits → CTA)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            $idx = 1;
+                            foreach ($v2QueryStats as $qName => $stats): 
+                                $cr = $stats['clicks'] > 0 ? round(($stats['cta_taps'] / $stats['clicks']) * 100, 1) : 0;
+                            ?>
+                            <tr>
+                                <td class="td-num"><?php echo $idx++; ?></td>
+                                <td style="font-weight: 400; color: var(--ruffian-gold); letter-spacing: 0.05em;">
+                                    <?php echo htmlspecialchars($qName); ?>
+                                </td>
+                                <td><?php echo $stats['clicks']; ?></td>
+                                <td><?php echo $stats['copies']; ?></td>
+                                <td><?php echo $stats['cta_taps']; ?></td>
+                                <td style="font-weight: 600; color: <?php echo $cr > 0 ? 'var(--ruffian-gold)' : 'var(--text-muted)'; ?>;">
+                                    <?php echo $cr; ?>%
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+
+
+        <!-- ═══════════════════════════════════════
+           SECTION 2: LEGACY TWO-STEP FLOW
+           ═══════════════════════════════════════ -->
+        <div class="dash-section-title">Eski Oqim (Ikki Bosqichli Oqim) Statistikasi</div>
+
+        <!-- Stats Cards (Legacy Flow) -->
+        <div class="stats-row" style="opacity: 0.85;">
+            <div class="stat-card">
+                <div class="stat-value"><?php echo $totalLegacySubmissions; ?></div>
+                <div class="stat-label">Jami arizalar (Tarixiy)</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayLegacySubmissions; ?></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value"><?php echo $totalLegacyClicks; ?></div>
+                <div class="stat-label">Jami bosishlar (Tarixiy)</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayLegacyClicks; ?></div>
+            </div>
+        </div>
+
+        <!-- Legacy Query Performance Section -->
+        <div class="table-container" style="margin-bottom: 36px;">
+            <div class="table-header-row">
+                <h2 class="table-title">Eski Postlar samaradorligi (Legacy Query Performance)</h2>
+                <span class="table-count"><?php echo count($legacyQueryStats); ?> ta post</span>
+            </div>
+
+            <?php if (empty($legacyQueryStats)): ?>
+                <div class="table-empty">
+                    <p>Eski oqim (V1) bo'yicha hech qanday ma'lumot topilmadi.</p>
+                </div>
+            <?php else: ?>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="th-num">#</th>
+                                <th>Post / Query nomi (igtrgt)</th>
+                                <th>Bosishlar (Clicks)</th>
+                                <th>Arizalar (Submissions)</th>
+                                <th>Konversiya (CR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            $idx = 1;
+                            foreach ($legacyQueryStats as $qName => $stats): 
+                                $cr = $stats['clicks'] > 0 ? round(($stats['submissions'] / $stats['clicks']) * 100, 1) : 0;
+                            ?>
+                            <tr>
+                                <td class="td-num"><?php echo $idx++; ?></td>
+                                <td style="font-weight: 400; color: var(--ruffian-gold); letter-spacing: 0.05em;">
+                                    <?php echo htmlspecialchars($qName); ?>
+                                </td>
+                                <td><?php echo $stats['clicks']; ?></td>
+                                <td><?php echo $stats['submissions']; ?></td>
+                                <td style="font-weight: 600; color: <?php echo $cr > 0 ? 'var(--ruffian-gold)' : 'var(--text-muted)'; ?>;">
+                                    <?php echo $cr; ?>%
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Legacy Submissions Table -->
+        <div class="table-container" style="margin-bottom: 36px;">
+            <div class="table-header-row">
+                <h2 class="table-title">Barcha arizalar (Tarixiy ro'yxat)</h2>
+                <span class="table-count"><?php echo $totalLegacySubmissions; ?> ta</span>
+            </div>
+
+            <?php if ($totalLegacySubmissions === 0): ?>
+                <div class="table-empty">
+                    <p>Hozircha hech qanday ariza yo'q.</p>
+                </div>
+            <?php else: ?>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="th-num">#</th>
+                                <th class="th-code">Promokod</th>
+                                <th class="th-user">Instagram</th>
+                                <th>Manba (Source)</th>
+                                <th class="th-time">Vaqt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($submissions as $i => $s): ?>
+                            <tr>
+                                <td class="td-num"><?php echo $totalLegacySubmissions - $i; ?></td>
+                                <td class="td-code"><?php echo htmlspecialchars($s['code']); ?></td>
+                                <td class="td-user">
+                                    <a href="https://instagram.com/<?php echo htmlspecialchars($s['username']); ?>" target="_blank" rel="noopener">
+                                        @<?php echo htmlspecialchars($s['username']); ?>
+                                    </a>
+                                </td>
+                                <td>
+                                    <?php if ($s['query'] !== '—' && $s['query'] !== ''): ?>
+                                        <span style="display: inline-block; padding: 2px 8px; font-size: 11px; background: rgba(233, 182, 49, 0.1); border: 1px solid rgba(233, 182, 49, 0.25); color: var(--ruffian-gold); letter-spacing: 0.03em;">
+                                            <?php echo htmlspecialchars($s['query']); ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span style="color: var(--text-muted); font-size: 11px;">to'g'ridan-to'g'ri</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="td-time"><?php echo htmlspecialchars($s['timestamp']); ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+
+    </div>
+
     <!-- Footer -->
     <footer class="dash-footer">
         <p>Ruffian Admin &middot; <?php echo date('Y'); ?></p>
     </footer>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var toggleBtn = document.getElementById('toggle-older-btn');
+    var wrapper = document.getElementById('older-sections-wrapper');
+    var chevron = toggleBtn ? toggleBtn.querySelector('.chevron-icon') : null;
+    
+    if (toggleBtn && wrapper) {
+        toggleBtn.addEventListener('click', function() {
+            if (wrapper.classList.contains('older-sections-collapsed')) {
+                wrapper.classList.remove('older-sections-collapsed');
+                wrapper.classList.add('older-sections-expanded');
+                toggleBtn.innerHTML = 'Yopish <svg class="chevron-icon chevron-rotate" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; transition: transform 0.3s ease; vertical-align: middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+            } else {
+                wrapper.classList.remove('older-sections-expanded');
+                wrapper.classList.add('older-sections-collapsed');
+                toggleBtn.innerHTML = 'Ko\'proq ko\'rish <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; transition: transform 0.3s ease; vertical-align: middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+            }
+        });
+    }
+});
+</script>
 
 </body>
 </html>
