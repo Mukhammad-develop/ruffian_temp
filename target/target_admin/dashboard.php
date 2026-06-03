@@ -287,7 +287,7 @@ uasort($eduQueryStats, function ($a, $b) {
         }
 
         .toggle-older-btn:hover {
-            background: rgba(233, 182, 49, 0.08) !important;
+            background: linear-gradient(rgba(233, 182, 49, 0.08), rgba(233, 182, 49, 0.08)), var(--hunter-green) !important;
             border-color: var(--ruffian-gold) !important;
         }
 
