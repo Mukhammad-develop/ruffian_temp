@@ -263,7 +263,7 @@ uasort($eduQueryStats, function ($a, $b) {
     <style>
         /* ── Collapsible Sections (V2 and Legacy V1) ── */
         .toggle-older-btn {
-            background: transparent !important;
+            background: var(--hunter-green) !important;
             border: 1px solid rgba(233, 182, 49, 0.3) !important;
             color: var(--ruffian-gold) !important;
             padding: 9px 20px !important;
@@ -333,7 +333,7 @@ uasort($eduQueryStats, function ($a, $b) {
     <div class="dash-section-title">Edu Oqim (3 Qadamli Ta'lim Sahifasi) Statistikasi</div>
 
     <!-- Stats Cards (Edu Flow) -->
-    <div class="stats-row" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 600px;">
+    <div class="stats-row">
         <div class="stat-card">
             <div class="stat-value"><?php echo $totalEduVisits; ?></div>
             <div class="stat-label">Jami kirishlar (Edu)</div>
