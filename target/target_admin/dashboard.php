@@ -370,20 +370,6 @@ uasort($eduQueryStats, function ($a, $b) {
                 <div class="funnel-stage-value"><?php echo $totalV2Copies; ?></div>
                 <div class="funnel-stage-label">Nusxalashlar</div>
                 <div class="funnel-stage-sub">Promokod ko'chirilishi</div>
-            </div>
-            
-            <!-- Arrow 2 -->
-            <div class="funnel-arrow">
-                <?php 
-                $ctaCr = $totalV2Copies > 0 ? round(($totalV2CtaTaps / $totalV2Copies) * 100, 1) : 0;
-                $overallCr = $totalV2Visits > 0 ? round(($totalV2CtaTaps / $totalV2Visits) * 100, 1) : 0;
-                ?>
-                <div class="funnel-arrow-cr"><?php echo $ctaCr; ?>% CR</div>
-                <div class="funnel-arrow-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </div>
-            </div>
-            
             <!-- Stage 3: CTA Taps -->
             <div class="funnel-stage">
                 <span class="funnel-stage-num">03</span>
