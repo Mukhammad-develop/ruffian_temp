@@ -1,0 +1,99 @@
+/*
+ * Ruffian Edu Flow — Educational Landing Page Styles
+ * Extension of css/style.css
+ * Brand: Hunter Green + Ruffian Gold
+ */
+
+/* ── Edu Steps: slightly more breathing room ── */
+.edu-steps {
+    margin: 28px 0 32px;
+}
+
+.edu-step {
+    padding: 20px 0;
+    gap: 0;
+    align-items: flex-start;
+}
+
+.edu-step .ritual-numeral {
+    padding-top: 2px;
+}
+
+.edu-step .ritual-divider {
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+/* Step body: label + value stacked */
+.edu-step-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* "+" badge — bold, gold, slightly larger */
+.edu-plus-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Celandine', serif;
+    font-size: 32px;
+    color: var(--ruffian-gold);
+    background: rgba(233, 182, 49, 0.08);
+    border: 1px solid rgba(233, 182, 49, 0.25);
+    width: 52px;
+    height: 52px;
+    line-height: 1;
+    letter-spacing: 0;
+    transition: background 200ms ease, border-color 200ms ease;
+}
+
+/* Instagram handle link */
+.edu-ig-handle {
+    display: inline-block;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--ruffian-gold);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(233, 182, 49, 0.35);
+    padding-bottom: 2px;
+    width: fit-content;
+    transition: color 200ms ease, border-color 200ms ease;
+}
+
+.edu-ig-handle:hover {
+    color: var(--gold-highlight);
+    border-color: var(--gold-highlight);
+}
+
+/* Final step text — slightly brighter */
+.edu-step-final {
+    color: rgba(255, 255, 255, 0.95);
+    font-style: italic;
+}
+
+/* CTA button — flex row with icon */
+.edu-cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    margin-top: 8px;
+}
+
+/* Subtle entrance animation for steps */
+.edu-step:nth-child(1) { animation: fadeIn 350ms ease 50ms both; }
+.edu-step:nth-child(2) { animation: fadeIn 350ms ease 150ms both; }
+.edu-step:nth-child(3) { animation: fadeIn 350ms ease 250ms both; }
+
+/* Responsive */
+@media (max-width: 480px) {
+    .edu-plus-badge {
+        font-size: 26px;
+        width: 44px;
+        height: 44px;
+    }
+}

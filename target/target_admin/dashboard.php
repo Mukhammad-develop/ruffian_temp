@@ -211,6 +211,75 @@ uasort($v2QueryStats, function ($a, $b) {
     }
     return $b['cta_taps'] - $a['cta_taps'];
 });
+
+// ── Read Edu Visits CSV ──
+$eduVisitsFile = dirname(__DIR__) . '/data/edu_visits.csv';
+$eduVisits = [];
+$totalEduVisits = 0;
+
+if (file_exists($eduVisitsFile) && ($handle = fopen($eduVisitsFile, 'r')) !== false) {
+    $header = fgetcsv($handle);
+    while (($row = fgetcsv($handle)) !== false) {
+        if (isset($row[1]) && $row[1] !== '') {
+            $eduVisits[] = ['timestamp' => $row[0], 'query' => trim($row[1])];
+        }
+    }
+    fclose($handle);
+    $totalEduVisits = count($eduVisits);
+}
+
+// ── Read Edu CTA Taps CSV ──
+$eduCtaFile = dirname(__DIR__) . '/data/edu_cta_taps.csv';
+$eduCtaTaps = [];
+$totalEduCtaTaps = 0;
+
+if (file_exists($eduCtaFile) && ($handle = fopen($eduCtaFile, 'r')) !== false) {
+    $header = fgetcsv($handle);
+    while (($row = fgetcsv($handle)) !== false) {
+        if (isset($row[1]) && $row[1] !== '') {
+            $eduCtaTaps[] = ['timestamp' => $row[0], 'query' => trim($row[1])];
+        }
+    }
+    fclose($handle);
+    $totalEduCtaTaps = count($eduCtaTaps);
+}
+
+// ── Edu Daily Stats ──
+$todayEduVisits = 0;
+$todayEduCtaTaps = 0;
+
+foreach ($eduVisits as $v) {
+    if (strpos($v['timestamp'], $today) === 0) $todayEduVisits++;
+}
+foreach ($eduCtaTaps as $ct) {
+    if (strpos($ct['timestamp'], $today) === 0) $todayEduCtaTaps++;
+}
+
+// ── Edu per-query aggregation ──
+$eduQueryStats = [];
+
+foreach ($eduVisits as $v) {
+    $q = $v['query'];
+    if (!isset($eduQueryStats[$q])) {
+        $eduQueryStats[$q] = ['visits' => 0, 'cta_taps' => 0];
+    }
+    $eduQueryStats[$q]['visits']++;
+}
+
+foreach ($eduCtaTaps as $ct) {
+    $q = $ct['query'];
+    if (!isset($eduQueryStats[$q])) {
+        $eduQueryStats[$q] = ['visits' => 0, 'cta_taps' => 0];
+    }
+    $eduQueryStats[$q]['cta_taps']++;
+}
+
+uasort($eduQueryStats, function ($a, $b) {
+    if ($a['cta_taps'] === $b['cta_taps']) {
+        return $b['visits'] - $a['visits'];
+    }
+    return $b['cta_taps'] - $a['cta_taps'];
+});
 ?>
 <!DOCTYPE html>
 <html lang="uz">
@@ -488,6 +557,78 @@ uasort($v2QueryStats, function ($a, $b) {
                                 <?php endif; ?>
                             </td>
                             <td class="td-time"><?php echo htmlspecialchars($s['timestamp']); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+       SECTION 3: EDU FLOW
+       ═══════════════════════════════════════ -->
+    <div class="dash-section-title">Edu Oqim (3 Qadamli Ta'lim Sahifasi) Statistikasi</div>
+
+    <!-- Stats Cards (Edu Flow) -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-value"><?php echo $totalEduVisits; ?></div>
+            <div class="stat-label">Jami kirishlar (Edu)</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayEduVisits; ?></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value"><?php echo $totalEduCtaTaps; ?></div>
+            <div class="stat-label">Instagramga o'tishlar</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayEduCtaTaps; ?></div>
+        </div>
+        <div class="stat-card">
+            <?php $eduOverallCr = $totalEduVisits > 0 ? round(($totalEduCtaTaps / $totalEduVisits) * 100, 1) : 0; ?>
+            <div class="stat-value"><?php echo $eduOverallCr; ?>%</div>
+            <div class="stat-label">Umumiy Konversiya (CR)</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Kirishlar → Instagram o'tish</div>
+        </div>
+    </div>
+
+    <!-- Edu Query Performance Table -->
+    <div class="table-container" style="margin-bottom: 36px;">
+        <div class="table-header-row">
+            <h2 class="table-title">Edu Postlar samaradorligi (Edu Query Performance)</h2>
+            <span class="table-count"><?php echo count($eduQueryStats); ?> ta post</span>
+        </div>
+
+        <?php if (empty($eduQueryStats)): ?>
+            <div class="table-empty">
+                <p>Hozircha edu oqimi bo'yicha hech qanday tashriflar kelmagan.</p>
+            </div>
+        <?php else: ?>
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="th-num">#</th>
+                            <th>Post / Query nomi (igtrgt)</th>
+                            <th>Kirishlar (Visits)</th>
+                            <th>Instagramga o'tishlar (CTA Taps)</th>
+                            <th>Konversiya (CR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $idx = 1;
+                        foreach ($eduQueryStats as $qName => $stats):
+                            $cr = $stats['visits'] > 0 ? round(($stats['cta_taps'] / $stats['visits']) * 100, 1) : 0;
+                        ?>
+                        <tr>
+                            <td class="td-num"><?php echo $idx++; ?></td>
+                            <td style="font-weight: 400; color: var(--ruffian-gold); letter-spacing: 0.05em;">
+                                <?php echo htmlspecialchars($qName); ?>
+                            </td>
+                            <td><?php echo $stats['visits']; ?></td>
+                            <td><?php echo $stats['cta_taps']; ?></td>
+                            <td style="font-weight: 600; color: <?php echo $cr > 0 ? 'var(--ruffian-gold)' : 'var(--text-muted)'; ?>;">
+                                <?php echo $cr; ?>%
+                            </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
