@@ -31,21 +31,13 @@
     gap: 8px;
 }
 
-/* "+" badge — bold, gold, slightly larger */
-.edu-plus-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Celandine', serif;
-    font-size: 32px;
+/* "+" inline — gold, same size as surrounding text */
+.edu-plus-inline {
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: inherit;
+    font-weight: 600;
     color: var(--ruffian-gold);
-    background: rgba(233, 182, 49, 0.08);
-    border: 1px solid rgba(233, 182, 49, 0.25);
-    width: 52px;
-    height: 52px;
-    line-height: 1;
     letter-spacing: 0;
-    transition: background 200ms ease, border-color 200ms ease;
 }
 
 /* Instagram handle link */
