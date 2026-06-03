@@ -260,6 +260,51 @@ uasort($eduQueryStats, function ($a, $b) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Lora:ital,wght@0,400;1,400&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* ── Collapsible Sections (V2 and Legacy V1) ── */
+        .toggle-older-btn {
+            background: transparent !important;
+            border: 1px solid rgba(233, 182, 49, 0.3) !important;
+            color: var(--ruffian-gold) !important;
+            padding: 9px 20px !important;
+            font-family: 'Montserrat', Arial, sans-serif !important;
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.1em !important;
+            text-transform: uppercase !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease-in-out !important;
+            position: relative !important;
+            z-index: 10 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            border-radius: 0 !important;
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+        }
+
+        .toggle-older-btn:hover {
+            background: rgba(233, 182, 49, 0.08) !important;
+            border-color: var(--ruffian-gold) !important;
+        }
+
+        .older-sections-collapsed {
+            display: none !important;
+            opacity: 0 !important;
+        }
+
+        .older-sections-expanded {
+            display: block !important;
+            opacity: 1 !important;
+        }
+
+        .chevron-rotate {
+            transform: rotate(180deg) !important;
+        }
+    </style>
 </head>
 <body class="dashboard-body">
 
