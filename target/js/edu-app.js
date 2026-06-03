@@ -1,17 +1,15 @@
 /**
  * Ruffian Edu Flow — Frontend Logic
- * Educational landing page: tracks page visits + CTA clicks, no promo code.
+ * Educational landing page: tracks page visits, no promo code.
  *
  * Tracking:
  *  - Page visit → POST api/track_edu_visit.php  (once per session tab)
- *  - CTA click  → POST api/track_edu_cta.php
  */
 
 (function () {
     'use strict';
 
     var VISIT_API = 'api/track_edu_visit.php';
-    var CTA_API   = 'api/track_edu_cta.php';
 
     // ── Resolve igtrgt: URL param → sessionStorage → 'organic' ──
     function resolveIgtrgt() {
@@ -50,16 +48,7 @@
         } catch (e) {}
     }
 
-    // ── Track CTA click ──
-    var ctaBtn = document.getElementById('edu-dm-link');
-    if (ctaBtn) {
-        ctaBtn.addEventListener('click', function () {
-            var igtrgt = resolveIgtrgt();
-            track(CTA_API, igtrgt);
-        });
-    }
-
     // ── Init ──
     trackVisit();
 
-})();
+})()

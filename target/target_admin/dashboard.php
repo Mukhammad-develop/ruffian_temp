@@ -228,31 +228,11 @@ if (file_exists($eduVisitsFile) && ($handle = fopen($eduVisitsFile, 'r')) !== fa
     $totalEduVisits = count($eduVisits);
 }
 
-// ── Read Edu CTA Taps CSV ──
-$eduCtaFile = dirname(__DIR__) . '/data/edu_cta_taps.csv';
-$eduCtaTaps = [];
-$totalEduCtaTaps = 0;
-
-if (file_exists($eduCtaFile) && ($handle = fopen($eduCtaFile, 'r')) !== false) {
-    $header = fgetcsv($handle);
-    while (($row = fgetcsv($handle)) !== false) {
-        if (isset($row[1]) && $row[1] !== '') {
-            $eduCtaTaps[] = ['timestamp' => $row[0], 'query' => trim($row[1])];
-        }
-    }
-    fclose($handle);
-    $totalEduCtaTaps = count($eduCtaTaps);
-}
-
 // ── Edu Daily Stats ──
 $todayEduVisits = 0;
-$todayEduCtaTaps = 0;
 
 foreach ($eduVisits as $v) {
     if (strpos($v['timestamp'], $today) === 0) $todayEduVisits++;
-}
-foreach ($eduCtaTaps as $ct) {
-    if (strpos($ct['timestamp'], $today) === 0) $todayEduCtaTaps++;
 }
 
 // ── Edu per-query aggregation ──
@@ -261,24 +241,13 @@ $eduQueryStats = [];
 foreach ($eduVisits as $v) {
     $q = $v['query'];
     if (!isset($eduQueryStats[$q])) {
-        $eduQueryStats[$q] = ['visits' => 0, 'cta_taps' => 0];
+        $eduQueryStats[$q] = ['visits' => 0];
     }
     $eduQueryStats[$q]['visits']++;
 }
 
-foreach ($eduCtaTaps as $ct) {
-    $q = $ct['query'];
-    if (!isset($eduQueryStats[$q])) {
-        $eduQueryStats[$q] = ['visits' => 0, 'cta_taps' => 0];
-    }
-    $eduQueryStats[$q]['cta_taps']++;
-}
-
 uasort($eduQueryStats, function ($a, $b) {
-    if ($a['cta_taps'] === $b['cta_taps']) {
-        return $b['visits'] - $a['visits'];
-    }
-    return $b['cta_taps'] - $a['cta_taps'];
+    return $b['visits'] - $a['visits'];
 });
 ?>
 <!DOCTYPE html>
@@ -557,22 +526,14 @@ uasort($eduQueryStats, function ($a, $b) {
     <div class="dash-section-title">Edu Oqim (3 Qadamli Ta'lim Sahifasi) Statistikasi</div>
 
     <!-- Stats Cards (Edu Flow) -->
-    <div class="stats-row">
+    <div class="stats-row" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 600px;">
         <div class="stat-card">
             <div class="stat-value"><?php echo $totalEduVisits; ?></div>
             <div class="stat-label">Jami kirishlar (Edu)</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayEduVisits; ?></div>
         </div>
         <div class="stat-card">
-            <div class="stat-value"><?php echo $totalEduCtaTaps; ?></div>
-            <div class="stat-label">Instagramga o'tishlar</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Bugun: <?php echo $todayEduCtaTaps; ?></div>
-        </div>
-        <div class="stat-card">
-            <?php $eduOverallCr = $totalEduVisits > 0 ? round(($totalEduCtaTaps / $totalEduVisits) * 100, 1) : 0; ?>
-            <div class="stat-value"><?php echo $eduOverallCr; ?>%</div>
-            <div class="stat-label">Umumiy Konversiya (CR)</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 0.05em;">Kirishlar → Instagram o'tish</div>
+            <div class="stat-value"><?php echo $todayEduVisits; ?></div>
+            <div class="stat-label">Bugungi kirishlar (Edu)</div>
         </div>
     </div>
 
@@ -592,28 +553,23 @@ uasort($eduQueryStats, function ($a, $b) {
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="th-num">#</th>
+                            <th class="th-num" style="width: 60px;">#</th>
                             <th>Post / Query nomi (igtrgt)</th>
-                            <th>Kirishlar (Visits)</th>
-                            <th>Instagramga o'tishlar (CTA Taps)</th>
-                            <th>Konversiya (CR)</th>
+                            <th style="text-align: right; padding-right: 24px; width: 180px;">Kirishlar (Visits)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         $idx = 1;
                         foreach ($eduQueryStats as $qName => $stats):
-                            $cr = $stats['visits'] > 0 ? round(($stats['cta_taps'] / $stats['visits']) * 100, 1) : 0;
                         ?>
                         <tr>
                             <td class="td-num"><?php echo $idx++; ?></td>
                             <td style="font-weight: 400; color: var(--ruffian-gold); letter-spacing: 0.05em;">
                                 <?php echo htmlspecialchars($qName); ?>
                             </td>
-                            <td><?php echo $stats['visits']; ?></td>
-                            <td><?php echo $stats['cta_taps']; ?></td>
-                            <td style="font-weight: 600; color: <?php echo $cr > 0 ? 'var(--ruffian-gold)' : 'var(--text-muted)'; ?>;">
-                                <?php echo $cr; ?>%
+                            <td style="text-align: right; padding-right: 24px; font-weight: 600; color: var(--ruffian-gold);">
+                                <?php echo $stats['visits']; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>
